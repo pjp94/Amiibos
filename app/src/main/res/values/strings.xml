@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Amiibos</string>
+
+    <string name="no_amiibos_loaded">We can\'t load our Amiibos right now - please try again later!</string>
+
+    <!-- Amiibo details -->
+    <string name="detail_character">Character: %s</string>
+    <string name="detail_amiibo_series">Amiibo Series: %s</string>
+    <string name="detail_game_series">Game Series: %s</string>
+    <string name="detail_type">Type: %s</string>
+    <string name="detail_releases">Releases:</string>
+
+    <!-- Releases -->
+    <string name="australia">Australia</string>
+    <string name="europe">Europe</string>
+    <string name="japan">Japan</string>
+    <string name="north_america">North America</string>
+    <string name="not_applicable">N/A</string>
+
+    <!-- Detail buttons -->
+    <string name="purchase">Purchase</string>
+    <string name="purchased">Purchased</string>
+    <string name="remove">Remove</string>
+
+    <string name="filter">Filter:</string>
+
+    <!-- Purchasing -->
+    <string name="purchase_amiibo">Purchased %s!</string>
+    <string name="unpurchase_amiibo">Canceled purchase of %s.</string>
+
+    <!-- Content descriptors -->
+    <string name="add_amiibo_fab_description">Adds a custom Amiibo with a user selected image.</string>
+    <string name="amiibo_detail_image_description">Full scale Amiibo image.</string>
+    <string name="sad_face_image_description">Sad face.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

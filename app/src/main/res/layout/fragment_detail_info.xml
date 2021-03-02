@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/detailName"
+        style="@style/DetailHeader" />
+
+    <include layout="@layout/detail_name_underline" />
+
+    <TextView
+        android:id="@+id/detailCharacter"
+        android:text="@string/detail_character"
+        style="@style/DetailInfo" />
+
+    <TextView
+        android:id="@+id/detailAmiiboSeries"
+        android:text="@string/detail_amiibo_series"
+        style="@style/DetailInfo" />
+
+    <TextView
+        android:id="@+id/detailGameSeries"
+        android:text="@string/detail_game_series"
+        style="@style/DetailInfo" />
+
+    <TextView
+        android:id="@+id/detailType"
+        android:text="@string/detail_type"
+        style="@style/DetailInfo" />
+
+    <TextView
+        android:id="@+id/detailReleases"
+        android:text="@string/detail_releases"
+        style="@style/DetailInfo" />
+
+    <include layout="@layout/releases_table" />
+
+    <include layout="@layout/detail_buttons" />
+
+</LinearLayout>
