@@ -22,8 +22,6 @@
     <string name="purchased">Purchased</string>
     <string name="remove">Remove</string>
 
-    <string name="filter">Filter:</string>
-
     <!-- Purchasing -->
     <string name="purchase_amiibo">Purchased %s!</string>
     <string name="unpurchase_amiibo">Canceled purchase of %s.</string>
@@ -39,11 +37,14 @@
     <string name="remove_amiibo_message">Are you sure you want to remove %s from your store?</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Filters -->
+    <string name="filter">Filter:</string>
+    <string name="all">All</string>
+    <string name="custom">Custom</string>
+
     <!-- Content descriptors -->
     <string name="add_amiibo_fab_description">Adds a custom Amiibo with a user selected image.</string>
     <string name="amiibo_detail_image_description">Full scale Amiibo image.</string>
     <string name="sad_face_image_description">Sad face.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

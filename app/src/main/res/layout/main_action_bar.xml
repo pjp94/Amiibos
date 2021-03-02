@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:text="@string/filter"
-            android:textSize="28sp"
+            android:textSize="20sp"
             android:textColor="@color/white" />
 
         <Spinner

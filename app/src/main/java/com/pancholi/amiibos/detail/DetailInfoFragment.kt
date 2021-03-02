@@ -15,13 +15,20 @@ import com.pancholi.amiibos.Logger
 import com.pancholi.amiibos.R
 import com.pancholi.amiibos.database.Amiibo
 
-const val SELECTED_AMIIBO = "com.pancholi.amiibos.SELECTED_AMIIBO"
+const val AMIIBO_DETAILS = "com.pancholi.amiibos.AMIIBO_DETAILS"
 
-class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: AmiiboRemoval) :
-  Fragment(R.layout.fragment_detail_info) {
+class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
+
+  private var amiibo: Amiibo? = null
 
   private lateinit var root: View
   private lateinit var purchaseButton: Button
+  private lateinit var amiiboStateListener: AmiiboStateListener
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    getArgs()
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +42,16 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
     return root
   }
 
+  private fun getArgs() {
+    arguments?.let {
+      amiibo = it.getParcelable(AMIIBO_DETAILS)
+    }
+  }
+
+  fun setAmiiboStateListener(amiiboStateListener: AmiiboStateListener) {
+    this.amiiboStateListener = amiiboStateListener
+  }
+
   private fun setInfo() {
     setTextViews()
     setReleases()
@@ -43,15 +60,15 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
   private fun setTextViews() {
     val resources = activity?.resources
 
-    root.findViewById<TextView>(R.id.detailName).text = amiibo.name
+    root.findViewById<TextView>(R.id.detailName).text = amiibo?.name
     root.findViewById<TextView>(R.id.detailCharacter).text =
-      resources?.getString(R.string.detail_character, amiibo.character)
+      resources?.getString(R.string.detail_character, amiibo?.character)
     root.findViewById<TextView>(R.id.detailAmiiboSeries).text =
-      resources?.getString(R.string.detail_amiibo_series, amiibo.amiiboSeries)
+      resources?.getString(R.string.detail_amiibo_series, amiibo?.amiiboSeries)
     root.findViewById<TextView>(R.id.detailGameSeries).text =
-      resources?.getString(R.string.detail_game_series, amiibo.gameSeries)
+      resources?.getString(R.string.detail_game_series, amiibo?.gameSeries)
     root.findViewById<TextView>(R.id.detailType).text =
-      resources?.getString(R.string.detail_type, amiibo.type)
+      resources?.getString(R.string.detail_type, amiibo?.type)
   }
 
   private fun setReleases() {
@@ -63,7 +80,7 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
 
   private fun getReleaseDateString(key: String): String? {
     val notApplicable = activity?.resources?.getString(R.string.not_applicable)
-    val date = amiibo.releases[key]
+    val date = amiibo?.releases?.get(key)
 
     return if (date == null || date == "null") notApplicable else date
   }
@@ -71,14 +88,14 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
   private fun setPurchaseButton() {
     purchaseButton = root.findViewById(R.id.buttonPurchase)
     purchaseButton.setOnClickListener {
-      if (!amiibo.purchased) {
+      if (!amiibo?.purchased!!) {
         purchaseAmiibo()
       } else {
         showUnpurchaseConfirmationDialog()
       }
     }
 
-    if (amiibo.purchased) {
+    if (amiibo?.purchased!!) {
       setPurchaseButtonPurchasedState()
     } else {
       setPurchasedButtonUnpurchasedState()
@@ -86,8 +103,7 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
   }
 
   private fun purchaseAmiibo() {
-    val purchaser = context?.let { Purchaser(it) }
-    purchaser?.purchase(amiibo)
+    amiiboStateListener.onPurchaseChanged(true)
     setPurchaseButtonPurchasedState()
     showPurchasedSnackbar()
   }
@@ -106,7 +122,7 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
     activity?.resources?.let {
       Snackbar.make(
         coordinator,
-        getString(R.string.purchase_amiibo, amiibo.name),
+        getString(R.string.purchase_amiibo, amiibo?.name),
         Snackbar.LENGTH_SHORT
       )
         .setBackgroundTint(it.getColor(R.color.lightGreen, null))
@@ -125,8 +141,7 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
   }
 
   private fun unpurchaseAmiibo() {
-    val purchaser = context?.let { Purchaser(it) }
-    purchaser?.undoPurchase(amiibo)
+    amiiboStateListener.onPurchaseChanged(false)
     setPurchasedButtonUnpurchasedState()
     showUnpurchasedSnackbar()
   }
@@ -145,7 +160,7 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
     activity?.resources?.let {
       Snackbar.make(
         coordinator,
-        getString(R.string.unpurchase_amiibo, amiibo.name),
+        getString(R.string.unpurchase_amiibo, amiibo?.name),
         Snackbar.LENGTH_SHORT
       )
         .setBackgroundTint(it.getColor(R.color.red, null))
@@ -162,17 +177,25 @@ class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: 
 
   private fun showRemoveConfirmationDialog() {
     AlertDialog.Builder(context)
-      .setTitle(context?.getString(R.string.remove_amiibo, amiibo.name))
-      .setMessage(context?.getString(R.string.remove_amiibo_message, amiibo.name))
+      .setTitle(context?.getString(R.string.remove_amiibo, amiibo?.name))
+      .setMessage(context?.getString(R.string.remove_amiibo_message, amiibo?.name))
       .setNegativeButton(R.string.cancel, null)
       .setPositiveButton(R.string.remove) { _, _ -> removeAmiibo() }
       .show()
   }
 
   private fun removeAmiibo() {
-    Logger.log("Removing ${amiibo.name} from store.")
-    val remover = context?.let { Remover(it) }
-    remover?.remove(amiibo)
-    amiiboRemoval.onRemoved()
+    Logger.log("Removing ${amiibo?.name} from store.")
+    amiiboStateListener.onRemoved()
+  }
+
+  companion object {
+    @JvmStatic
+    fun newInstance(amiibo: Amiibo) =
+      DetailInfoFragment().apply {
+        arguments = Bundle().apply {
+          putParcelable(AMIIBO_DETAILS, amiibo)
+        }
+      }
   }
 }

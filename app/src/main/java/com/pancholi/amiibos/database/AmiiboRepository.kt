@@ -1,14 +1,14 @@
 package com.pancholi.amiibos.database
 
-import android.content.Context
+import android.app.Application
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AmiiboRepository(context: Context) {
+class AmiiboRepository(application: Application) {
 
-  private val amiiboDao: AmiiboDao = AmiiboDatabase.getInstance(context).amiiboDao()
+  private val amiiboDao: AmiiboDao = AmiiboDatabase.getInstance(application).amiiboDao()
   private val amiibos = amiiboDao.getAllAmiibos()
 
   fun insert(amiibo: Amiibo) {
@@ -41,5 +41,9 @@ class AmiiboRepository(context: Context) {
 
   fun getPurchased(): LiveData<List<Amiibo>> {
     return amiiboDao.getPurchasedAmiibos()
+  }
+
+  fun getCustom(): LiveData<List<Amiibo>> {
+    return amiiboDao.getCustomAmiibos()
   }
 }

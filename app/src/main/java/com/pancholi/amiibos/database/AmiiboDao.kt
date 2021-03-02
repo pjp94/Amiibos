@@ -2,7 +2,6 @@ package com.pancholi.amiibos.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AmiiboDao {
@@ -24,4 +23,7 @@ interface AmiiboDao {
 
   @Query("SELECT * FROM amiibos WHERE purchased = 1")
   fun getPurchasedAmiibos(): LiveData<List<Amiibo>>
+
+  @Query("SELECT * FROM amiibos WHERE custom = 1")
+  fun getCustomAmiibos(): LiveData<List<Amiibo>>
 }

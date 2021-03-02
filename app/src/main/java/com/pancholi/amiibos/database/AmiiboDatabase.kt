@@ -29,6 +29,7 @@ abstract class AmiiboDatabase : RoomDatabase() {
 
     private fun createDatabase(context: Context): AmiiboDatabase {
       return Room.databaseBuilder(context, AmiiboDatabase::class.java, NAME)
+        .fallbackToDestructiveMigrationOnDowngrade()
         .build()
     }
   }

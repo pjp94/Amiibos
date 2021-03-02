@@ -1,17 +1,25 @@
 package com.pancholi.amiibos.detail
 
-import android.os.Bundle
-import androidx.core.os.bundleOf
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.pancholi.amiibos.database.Amiibo
+import com.pancholi.amiibos.database.AmiiboRepository
 
-class DetailViewModel(val amiibo: Amiibo) : ViewModel() {
+class DetailViewModel(amiiboApplication: Application, private val amiibo: Amiibo) :
+  AndroidViewModel(amiiboApplication) {
 
-  fun getImageBundle(): Bundle {
-    return bundleOf(IMAGE_URL to amiibo.image)
+  private val amiiboRepository = AmiiboRepository(amiiboApplication)
+
+  fun getAmiibo(): Amiibo {
+    return amiibo
   }
 
-  fun getInfoBundle(): Bundle {
-    return bundleOf(SELECTED_AMIIBO to amiibo)
+  fun setPurchasedState(purchased: Boolean) {
+    amiibo.purchased = purchased
+    amiiboRepository.update(amiibo)
+  }
+
+  fun removeAmiibo() {
+    amiiboRepository.delete(amiibo)
   }
 }

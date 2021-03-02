@@ -3,7 +3,7 @@ package com.pancholi.amiibos.time
 import android.content.Context
 import com.pancholi.amiibos.Logger
 
-class TimeChecker() {
+class TimeChecker {
 
   fun getLastFetchedTime(context: Context): String? {
     return LastFetched(context).getTime()

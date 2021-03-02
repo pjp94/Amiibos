@@ -22,7 +22,8 @@ data class Amiibo(
   val releases: Map<String, String?>,
   val tail: String,
   val type: String,
-  var purchased: Boolean
+  var purchased: Boolean,
+  var custom: Boolean
 ) : Parcelable {
 
   class Builder {
@@ -38,6 +39,7 @@ data class Amiibo(
     lateinit var type: String
 
     private var purchased = false
+    private var custom = false
 
     fun build(): Amiibo {
       return Amiibo(
@@ -50,7 +52,8 @@ data class Amiibo(
         releases,
         tail,
         type,
-        purchased
+        purchased,
+        custom
       )
     }
   }
