@@ -11,22 +11,17 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.pancholi.amiibos.Logger
 import com.pancholi.amiibos.R
 import com.pancholi.amiibos.database.Amiibo
 
 const val SELECTED_AMIIBO = "com.pancholi.amiibos.SELECTED_AMIIBO"
 
-class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
+class DetailInfoFragment(private val amiibo: Amiibo, private val amiiboRemoval: AmiiboRemoval) :
+  Fragment(R.layout.fragment_detail_info) {
 
   private lateinit var root: View
   private lateinit var purchaseButton: Button
-  private var purchased: Boolean? = null
-  private var amiibo: Amiibo? = null
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    getArgs()
-  }
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -40,12 +35,6 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
     return root
   }
 
-  private fun getArgs() {
-    arguments?.let {
-      amiibo = it.get(SELECTED_AMIIBO) as Amiibo
-    }
-  }
-
   private fun setInfo() {
     setTextViews()
     setReleases()
@@ -54,15 +43,15 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
   private fun setTextViews() {
     val resources = activity?.resources
 
-    root.findViewById<TextView>(R.id.detailName).text = amiibo?.name
+    root.findViewById<TextView>(R.id.detailName).text = amiibo.name
     root.findViewById<TextView>(R.id.detailCharacter).text =
-      resources?.getString(R.string.detail_character, amiibo?.character)
+      resources?.getString(R.string.detail_character, amiibo.character)
     root.findViewById<TextView>(R.id.detailAmiiboSeries).text =
-      resources?.getString(R.string.detail_amiibo_series, amiibo?.amiiboSeries)
+      resources?.getString(R.string.detail_amiibo_series, amiibo.amiiboSeries)
     root.findViewById<TextView>(R.id.detailGameSeries).text =
-      resources?.getString(R.string.detail_game_series, amiibo?.gameSeries)
+      resources?.getString(R.string.detail_game_series, amiibo.gameSeries)
     root.findViewById<TextView>(R.id.detailType).text =
-      resources?.getString(R.string.detail_type, amiibo?.type)
+      resources?.getString(R.string.detail_type, amiibo.type)
   }
 
   private fun setReleases() {
@@ -74,7 +63,7 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
 
   private fun getReleaseDateString(key: String): String? {
     val notApplicable = activity?.resources?.getString(R.string.not_applicable)
-    val date = amiibo?.releases?.get(key)
+    val date = amiibo.releases[key]
 
     return if (date == null || date == "null") notApplicable else date
   }
@@ -82,14 +71,14 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
   private fun setPurchaseButton() {
     purchaseButton = root.findViewById(R.id.buttonPurchase)
     purchaseButton.setOnClickListener {
-      if (!amiibo?.purchased!!) {
+      if (!amiibo.purchased) {
         purchaseAmiibo()
       } else {
         showUnpurchaseConfirmationDialog()
       }
     }
 
-    if (amiibo!!.purchased) {
+    if (amiibo.purchased) {
       setPurchaseButtonPurchasedState()
     } else {
       setPurchasedButtonUnpurchasedState()
@@ -98,10 +87,9 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
 
   private fun purchaseAmiibo() {
     val purchaser = context?.let { Purchaser(it) }
-    purchaser?.purchase(amiibo!!)
+    purchaser?.purchase(amiibo)
     setPurchaseButtonPurchasedState()
     showPurchasedSnackbar()
-    purchased = true
   }
 
   private fun setPurchaseButtonPurchasedState() {
@@ -118,7 +106,7 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
     activity?.resources?.let {
       Snackbar.make(
         coordinator,
-        getString(R.string.purchase_amiibo, amiibo?.name),
+        getString(R.string.purchase_amiibo, amiibo.name),
         Snackbar.LENGTH_SHORT
       )
         .setBackgroundTint(it.getColor(R.color.lightGreen, null))
@@ -129,19 +117,18 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
 
   private fun showUnpurchaseConfirmationDialog() {
     AlertDialog.Builder(context)
-      .setTitle("Cancel Purchase")
-      .setMessage("Are you sure you want to cancel your purchase?")
-      .setNegativeButton("No", null)
-      .setPositiveButton("Yes") { _, _ -> unpurchaseAmiibo() }
+      .setTitle(R.string.cancel_purchase)
+      .setMessage(R.string.cancel_purchase_message)
+      .setNegativeButton(R.string.no, null)
+      .setPositiveButton(R.string.yes) { _, _ -> unpurchaseAmiibo() }
       .show()
   }
 
   private fun unpurchaseAmiibo() {
     val purchaser = context?.let { Purchaser(it) }
-    purchaser?.undoPurchase(amiibo!!)
+    purchaser?.undoPurchase(amiibo)
     setPurchasedButtonUnpurchasedState()
     showUnpurchasedSnackbar()
-    purchased = false
   }
 
   private fun setPurchasedButtonUnpurchasedState() {
@@ -158,7 +145,7 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
     activity?.resources?.let {
       Snackbar.make(
         coordinator,
-        getString(R.string.unpurchase_amiibo, amiibo?.name),
+        getString(R.string.unpurchase_amiibo, amiibo.name),
         Snackbar.LENGTH_SHORT
       )
         .setBackgroundTint(it.getColor(R.color.red, null))
@@ -175,15 +162,17 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
 
   private fun showRemoveConfirmationDialog() {
     AlertDialog.Builder(context)
-      .setTitle("Remove ${amiibo?.name}")
-      .setMessage("Are you sure you want to remove ${amiibo?.name} from your store?")
-      .setNegativeButton("Cancel", null)
-      .setPositiveButton("Remove") { _, _ -> removeAmiibo() }
+      .setTitle(context?.getString(R.string.remove_amiibo, amiibo.name))
+      .setMessage(context?.getString(R.string.remove_amiibo_message, amiibo.name))
+      .setNegativeButton(R.string.cancel, null)
+      .setPositiveButton(R.string.remove) { _, _ -> removeAmiibo() }
       .show()
   }
 
   private fun removeAmiibo() {
+    Logger.log("Removing ${amiibo.name} from store.")
     val remover = context?.let { Remover(it) }
-    remover?.remove(amiibo!!)
+    remover?.remove(amiibo)
+    amiiboRemoval.onRemoved()
   }
 }

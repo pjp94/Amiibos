@@ -28,6 +28,17 @@
     <string name="purchase_amiibo">Purchased %s!</string>
     <string name="unpurchase_amiibo">Canceled purchase of %s.</string>
 
+    <!-- Cancel purchase dialog -->
+    <string name="cancel_purchase">Cancel Purchase</string>
+    <string name="cancel_purchase_message">Are you sure you want to cancel your purchase?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+
+    <!-- Remove Amiibo dialog -->
+    <string name="remove_amiibo">Remove %s</string>
+    <string name="remove_amiibo_message">Are you sure you want to remove %s from your store?</string>
+    <string name="cancel">Cancel</string>
+
     <!-- Content descriptors -->
     <string name="add_amiibo_fab_description">Adds a custom Amiibo with a user selected image.</string>
     <string name="amiibo_detail_image_description">Full scale Amiibo image.</string>

@@ -9,8 +9,10 @@ import com.pancholi.amiibos.R
 import com.pancholi.amiibos.database.Amiibo
 
 const val EXTRA_GRID_POSITION = "com.pancholi.amiibo.EXTRA_GRID_POSITION"
-const val EXTRA_AMIIBO_PURCHASED = "com.pancholi.amiibo.EXTRA_AMIIBO_PURCHASED"
 const val EXTRA_AMIIBO_DETAILS = "com.pancholi.amiibo.EXTRA_AMIIBO_DETAILS"
+const val EXTRA_AMIIBO_REMOVED = "com.pancholi.amiibo.EXTRA_AMIIBO_REMOVED"
+const val EXTRA_AMIIBO_NAME = "com.pancholi.amiibo.EXTRA_AMIIBO_NAME"
+const val RESULT_REMOVED = 100
 
 class DetailActivity : AppCompatActivity() {
 
@@ -20,14 +22,6 @@ class DetailActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_detail)
     setViewModelAndFragments()
-  }
-
-  override fun onBackPressed() {
-    val position = intent.getIntExtra(EXTRA_GRID_POSITION, -1)
-    val result = Intent()
-      .putExtra(EXTRA_GRID_POSITION, position)
-    setResult(RESULT_OK, result)
-    super.onBackPressed()
   }
 
   private fun setViewModelAndFragments() {
@@ -45,13 +39,30 @@ class DetailActivity : AppCompatActivity() {
   }
 
   private fun setFragments() {
-    val imageBundle = detailViewModel.getImageBundle()
-    val infoBundle = detailViewModel.getInfoBundle()
+    val imageFragment = DetailImageFragment(detailViewModel.amiibo.image)
+    val infoFragment = DetailInfoFragment(detailViewModel.amiibo, getAmiiboRemoval())
 
     supportFragmentManager.commit {
       setReorderingAllowed(true)
-      add(R.id.detailImageFragment, DetailImageFragment::class.java, imageBundle)
-      add(R.id.detailInfoFragment, DetailInfoFragment::class.java, infoBundle)
+      add(R.id.detailImageFragment, imageFragment, null)
+      add(R.id.detailInfoFragment, infoFragment, null)
     }
+  }
+
+  private fun getAmiiboRemoval(): AmiiboRemoval {
+    return object : AmiiboRemoval {
+      override fun onRemoved() {
+        handleAmiiboRemoved()
+      }
+    }
+  }
+
+  private fun handleAmiiboRemoved() {
+    val position = intent.getIntExtra(EXTRA_GRID_POSITION, -1)
+    val result = Intent()
+      .putExtra(EXTRA_AMIIBO_REMOVED, position)
+      .putExtra(EXTRA_AMIIBO_NAME, detailViewModel.amiibo.name)
+    setResult(RESULT_REMOVED, result)
+    finish()
   }
 }

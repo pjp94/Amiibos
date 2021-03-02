@@ -4,21 +4,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.pancholi.amiibos.database.Amiibo
-import com.pancholi.amiibos.detail.DetailActivity
-import com.pancholi.amiibos.detail.EXTRA_AMIIBO_DETAILS
-import com.pancholi.amiibos.detail.EXTRA_GRID_POSITION
+import com.pancholi.amiibos.detail.*
 
 class MainActivity : AppCompatActivity() {
 
   private lateinit var amiiboViewModel: AmiiboViewModel
   private lateinit var activityLauncher: ActivityResultLauncher<Intent>
+  private lateinit var gridAdapter: AmiiboGridAdapter
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -35,18 +37,19 @@ class MainActivity : AppCompatActivity() {
 
   private fun registerActivityForResult() {
     activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-      val position = it.data?.getIntExtra(EXTRA_GRID_POSITION, -1)
-
-      if (position != null && position > -1) {
-        Logger.log("Updating position $position in the grid.")
-        amiiboViewModel.updateAmiibo(position)
+      when (it.resultCode) {
+        RESULT_REMOVED -> handleDetailResultRemoved(it)
       }
     }
   }
 
   private fun setGrid() {
     val amiiboGrid = findViewById<RecyclerView>(R.id.amiiboGrid)
-    amiiboViewModel.setGridProperties(this, amiiboGrid, setOnGridItemClicked())
+    gridAdapter = AmiiboGridAdapter(this, setOnGridItemClicked())
+    amiiboGrid.layoutManager =
+      GridLayoutManager(this, resources.getInteger(R.integer.grid_column_count))
+    amiiboGrid.setHasFixedSize(true)
+    amiiboGrid.adapter = gridAdapter
   }
 
   private fun setOnGridItemClicked(): GridItemClicked {
@@ -73,7 +76,6 @@ class MainActivity : AppCompatActivity() {
   private fun setPostFetchViews(amiibos: List<Amiibo>) {
     if (amiibos.isNotEmpty()) {
       updateGrid(amiibos)
-      showAddFab()
     } else {
       showNoAmiibosLoadedMessage()
     }
@@ -81,14 +83,23 @@ class MainActivity : AppCompatActivity() {
 
   private fun updateGrid(amiibos: List<Amiibo>) {
     Logger.log("Loading Amiibos into grid.")
-    amiiboViewModel.updateGridAndNotify(amiibos)
-  }
-
-  private fun showAddFab() {
-    findViewById<FloatingActionButton>(R.id.addAmiiboFab).visibility = View.VISIBLE
+    gridAdapter.setAmiibosAndNotify(amiibos)
   }
 
   private fun showNoAmiibosLoadedMessage() {
     findViewById<LinearLayout>(R.id.no_amiibos_message).visibility = View.VISIBLE
+  }
+
+  private fun handleDetailResultRemoved(activityResult: ActivityResult) {
+    val name = activityResult.data?.getStringExtra(EXTRA_AMIIBO_NAME)
+
+    Snackbar.make(
+      findViewById(R.id.storeCoordinator),
+      "Removed $name from your store.",
+      Snackbar.LENGTH_SHORT
+    )
+      .setBackgroundTint(getColor(R.color.red))
+      .setTextColor(getColor(R.color.white))
+      .show()
   }
 }

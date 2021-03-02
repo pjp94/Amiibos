@@ -1,6 +1,7 @@
 package com.pancholi.amiibos
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.pancholi.amiibos.backend.AmiiboDownloader
 import com.pancholi.amiibos.database.Amiibo
@@ -21,14 +22,14 @@ class DataRetriever(val context: Context) {
       data = loadFromServer() as ArrayList
 
       if (data.isNotEmpty()) {
-        handleServerFetch(context, data)
+        postServerFetch(context, data)
       } else {
         serverFetchFailed = true
       }
     }
 
     if (!fetchFromServer || serverFetchFailed) {
-      data = loadFromDatabase() as ArrayList
+//      data = loadFromDatabase() as ArrayList
     }
 
     amiibos.postValue(data)
@@ -49,7 +50,7 @@ class DataRetriever(val context: Context) {
     return AmiiboDownloader().getAmiibosFromServer()
   }
 
-  private fun handleServerFetch(context: Context, data: List<Amiibo>) {
+  private fun postServerFetch(context: Context, data: List<Amiibo>) {
     saveToDatabase(data)
     saveLastFetchedTimeInIso(context)
   }
@@ -64,7 +65,7 @@ class DataRetriever(val context: Context) {
     lastFetched.saveCurrentTime()
   }
 
-  private fun loadFromDatabase(): List<Amiibo> {
+  private fun loadFromDatabase(): LiveData<List<Amiibo>> {
     Logger.log("Loading Amiibos from database.")
     return amiiboRepository.getAll()
   }

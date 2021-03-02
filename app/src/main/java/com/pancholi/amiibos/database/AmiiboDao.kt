@@ -20,7 +20,7 @@ interface AmiiboDao {
   fun delete(amiibo: Amiibo)
 
   @Query("SELECT * FROM amiibos")
-  fun getAllAmiibos(): List<Amiibo>
+  fun getAllAmiibos(): LiveData<List<Amiibo>>
 
   @Query("SELECT * FROM amiibos WHERE purchased = 1")
   fun getPurchasedAmiibos(): LiveData<List<Amiibo>>

@@ -11,14 +11,7 @@ import com.pancholi.amiibos.R
 
 const val IMAGE_URL = "com.pancholi.amiibos.IMAGE_URL"
 
-class DetailImageFragment : Fragment(R.layout.fragment_detail_image) {
-
-  private var imageUrl: String? = null
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    getArgs()
-  }
+class DetailImageFragment(private val imageUrl: String) : Fragment(R.layout.fragment_detail_image) {
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -27,12 +20,6 @@ class DetailImageFragment : Fragment(R.layout.fragment_detail_image) {
     loadImage(root)
 
     return root
-  }
-
-  private fun getArgs() {
-    arguments?.let {
-      imageUrl = it.getString(IMAGE_URL)
-    }
   }
 
   private fun loadImage(root: View) {

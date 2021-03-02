@@ -20,10 +20,11 @@ class AmiiboGridAdapter(
 ) :
   RecyclerView.Adapter<AmiiboGridAdapter.ViewHolder>() {
 
-  private var amiibos = ArrayList<Amiibo>()
+  private lateinit var amiibos: List<Amiibo>
 
-  fun setAmiibos(amiibos: List<Amiibo>) {
+  fun setAmiibosAndNotify(amiibos: List<Amiibo>) {
     this.amiibos = amiibos as ArrayList<Amiibo>
+    notifyDataSetChanged()
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,8 +35,10 @@ class AmiiboGridAdapter(
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    val amiibo = amiibos[position]
-    loadGridItemImage(holder, amiibo)
+    if (this::amiibos.isInitialized) {
+      val amiibo = amiibos[position]
+      loadGridItemImage(holder, amiibo)
+    }
   }
 
   private fun loadGridItemImage(holder: ViewHolder, amiibo: Amiibo) {
@@ -90,7 +93,7 @@ class AmiiboGridAdapter(
   }
 
   override fun getItemCount(): Int {
-    return amiibos.size
+    return if (this::amiibos.isInitialized) amiibos.size else 0
   }
 
   override fun getItemId(position: Int): Long {

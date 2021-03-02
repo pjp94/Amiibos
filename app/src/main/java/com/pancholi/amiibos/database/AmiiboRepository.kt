@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 class AmiiboRepository(context: Context) {
 
   private val amiiboDao: AmiiboDao = AmiiboDatabase.getInstance(context).amiiboDao()
+  private val amiibos = amiiboDao.getAllAmiibos()
 
   fun insert(amiibo: Amiibo) {
     CoroutineScope(Dispatchers.IO).launch {
@@ -34,8 +35,8 @@ class AmiiboRepository(context: Context) {
     }
   }
 
-  fun getAll(): List<Amiibo> {
-    return amiiboDao.getAllAmiibos()
+  fun getAll(): LiveData<List<Amiibo>> {
+    return amiibos
   }
 
   fun getPurchased(): LiveData<List<Amiibo>> {
