@@ -2,4 +2,5 @@
 <resources>
     <dimen name="amiibo_grid_name_size">16sp</dimen>
     <dimen name="release_table_margins">50dp</dimen>
+    <dimen name="custom_amiibo_input_size">20sp</dimen>
 </resources>

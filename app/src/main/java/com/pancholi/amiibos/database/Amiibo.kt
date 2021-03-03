@@ -12,16 +12,16 @@ import kotlinx.parcelize.Parcelize
 )
 data class Amiibo(
   @ColumnInfo(name = "amiibo_series")
-  val amiiboSeries: String,
-  val character: String,
+  val amiiboSeries: String?,
+  val character: String?,
   @ColumnInfo(name = "game_series")
-  val gameSeries: String,
+  val gameSeries: String?,
   val head: String,
   val image: String,
   val name: String,
-  val releases: Map<String, String?>,
+  val releases: Map<String, String?>?,
   val tail: String,
-  val type: String,
+  val type: String?,
   var purchased: Boolean,
   var custom: Boolean
 ) : Parcelable {

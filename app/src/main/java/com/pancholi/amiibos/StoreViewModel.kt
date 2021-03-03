@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.pancholi.amiibos.custom.CustomAmiibo
 import com.pancholi.amiibos.database.Amiibo
 import com.pancholi.amiibos.database.AmiiboRepository
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,7 @@ class StoreViewModel(amiiboApplication: Application) :
   private val dataRetriever = DataRetriever(amiiboApplication)
   private var amiibos = amiiboRepository.getAll()
   private var isLoadingData = false
+  private var customAmiibo: CustomAmiibo? = null
 
   fun getAmiibos(): LiveData<List<Amiibo>> {
     return amiibos
@@ -34,6 +36,10 @@ class StoreViewModel(amiiboApplication: Application) :
     return amiibos
   }
 
+  fun addCustomAmiibo(amiibo: Amiibo) {
+    amiiboRepository.insert(amiibo)
+  }
+
   fun setAllAmiibos() {
     amiibos = amiiboRepository.getAll()
   }
@@ -44,5 +50,13 @@ class StoreViewModel(amiiboApplication: Application) :
 
   fun setCustomAmiibos() {
     amiibos = amiiboRepository.getCustom()
+  }
+
+  fun setCustomAmiibo(customAmiibo: CustomAmiibo?) {
+    this.customAmiibo = customAmiibo
+  }
+
+  fun getCustomAmiibo(): CustomAmiibo? {
+    return customAmiibo
   }
 }

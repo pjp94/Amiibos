@@ -54,4 +54,44 @@
         <item name="colorAccent">@color/lightBlue</item>
     </style>
 
+    <style name="CustomAmiiboLabel" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_weight">0.5</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:textSize">@dimen/custom_amiibo_input_size</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CustomAmiiboField" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:textSize">@dimen/custom_amiibo_input_size</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:inputType">text</item>
+        <item name="maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="CustomAmiiboFrame">
+        <item name="android:layout_weight">0.75</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:background">@drawable/custom_amiibo_frames</item>
+    </style>
+
+    <style name="CustomDialogAnimation" parent="@style/Animation.AppCompat.Dialog">
+        <item name="android:windowEnterAnimation">@anim/dialog_slide_up</item>
+        <item name="android:windowExitAnimation">@anim/dialog_slide_down</item>
+    </style>
+
+    <style name="CustomDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/custom_dialog_background</item>
+        <item name="android:windowAnimationStyle">@style/CustomDialogAnimation</item>
+    </style>
+
 </resources>

@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.pancholi.amiibos.Logger
 import com.pancholi.amiibos.R
+import com.pancholi.amiibos.SnackbarDisplayer
 import com.pancholi.amiibos.database.Amiibo
 
 const val AMIIBO_DETAILS = "com.pancholi.amiibos.AMIIBO_DETAILS"
@@ -120,14 +121,12 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
     val coordinator = activity?.findViewById<CoordinatorLayout>(R.id.detailCoordinator) ?: return
 
     activity?.resources?.let {
-      Snackbar.make(
+      SnackbarDisplayer.showSnackbar(
         coordinator,
         getString(R.string.purchase_amiibo, amiibo?.name),
-        Snackbar.LENGTH_SHORT
+        it.getColor(R.color.lightGreen, null),
+        it.getColor(R.color.white, null)
       )
-        .setBackgroundTint(it.getColor(R.color.lightGreen, null))
-        .setTextColor(it.getColor(R.color.white, null))
-        .show()
     }
   }
 
@@ -158,14 +157,12 @@ class DetailInfoFragment : Fragment(R.layout.fragment_detail_info) {
     val coordinator = activity?.findViewById<CoordinatorLayout>(R.id.detailCoordinator) ?: return
 
     activity?.resources?.let {
-      Snackbar.make(
+      SnackbarDisplayer.showSnackbar(
         coordinator,
         getString(R.string.unpurchase_amiibo, amiibo?.name),
-        Snackbar.LENGTH_SHORT
+        it.getColor(R.color.red, null),
+        it.getColor(R.color.white, null)
       )
-        .setBackgroundTint(it.getColor(R.color.red, null))
-        .setTextColor(it.getColor(R.color.white, null))
-        .show()
     }
   }
 

@@ -1,63 +1,114 @@
 package com.pancholi.amiibos
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.LinearLayout
 import android.widget.Spinner
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.pancholi.amiibos.custom.CustomAmiiboDialog
+import com.pancholi.amiibos.custom.CustomAmiiboListener
 import com.pancholi.amiibos.database.Amiibo
 import com.pancholi.amiibos.detail.*
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+private const val IS_DIALOG_SHOWING = "com.pancholi.amiibos.IS_DIALOG_SHOWING"
+
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, CustomAmiiboListener {
+
+  private val activityLauncher = registerActivityForResult()
+  private val permissionLauncher = registerForPermissionResult()
+  private val contentLauncher = registerForContentResult()
 
   private lateinit var storeViewModel: StoreViewModel
-  private lateinit var activityLauncher: ActivityResultLauncher<Intent>
   private lateinit var gridAdapter: AmiiboGridAdapter
+  private lateinit var customAmiiboDialog: CustomAmiiboDialog
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     setViewModel()
-    registerActivityForResult()
     setGrid()
     getAmiibosAndDisplay()
     setFilterSpinner()
+    setAddCustomButton()
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    checkForDialog(outState)
+  }
+
+  private fun checkForDialog(outState: Bundle) {
+    if (this::customAmiiboDialog.isInitialized && customAmiiboDialog.isShowing) {
+      outState.putBoolean(IS_DIALOG_SHOWING, true)
+      storeViewModel.setCustomAmiibo(customAmiiboDialog.saveFields())
+      customAmiiboDialog.dismiss()
+    }
+  }
+
+  override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    super.onRestoreInstanceState(savedInstanceState)
+    restoreDialog(savedInstanceState)
+  }
+
+  private fun restoreDialog(savedInstanceState: Bundle) {
+    val isDialogShowing = savedInstanceState.getBoolean(IS_DIALOG_SHOWING, false)
+
+    if (isDialogShowing) {
+      showCustomAmiiboDialog()
+      customAmiiboDialog.setFields(storeViewModel.getCustomAmiibo())
+    }
   }
 
   private fun setViewModel() {
     storeViewModel = ViewModelProvider(this).get(StoreViewModel::class.java)
   }
 
-  private fun registerActivityForResult() {
-    activityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-      when (it.resultCode) {
-        RESULT_REMOVED -> handleDetailResultRemoved(it)
+  private fun registerActivityForResult(): ActivityResultLauncher<Intent> {
+    return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+      if (it.resultCode == RESULT_REMOVED) {
+        val name = it.data?.getStringExtra(EXTRA_AMIIBO_NAME)
+        handleDetailResultRemoved(name)
       }
     }
   }
 
-  private fun handleDetailResultRemoved(activityResult: ActivityResult) {
-    val name = activityResult.data?.getStringExtra(EXTRA_AMIIBO_NAME)
+  private fun registerForPermissionResult(): ActivityResultLauncher<String> {
+    return registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+      if (isGranted) {
+        openImagePicker()
+      }
+    }
+  }
 
-    Snackbar.make(
+  private fun registerForContentResult(): ActivityResultLauncher<String> {
+    return registerForActivityResult(ActivityResultContracts.GetContent()) {
+      customAmiiboDialog.show()
+
+      if (it != null) {
+        customAmiiboDialog.setSelectedImage(it)
+      }
+    }
+  }
+
+  private fun handleDetailResultRemoved(name: String?) {
+    SnackbarDisplayer.showSnackbar(
       findViewById(R.id.storeCoordinator),
-      "Removed $name from your store.",
-      Snackbar.LENGTH_SHORT
+      getString(R.string.remove_amiibo_snackbar, name),
+      getColor(R.color.red),
+      getColor(R.color.white)
     )
-      .setBackgroundTint(getColor(R.color.red))
-      .setTextColor(getColor(R.color.white))
-      .show()
   }
 
   private fun setGrid() {
@@ -91,9 +142,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   private fun setPostFetchViews(amiibos: List<Amiibo>) {
-    findViewById<ContentLoadingProgressBar>(R.id.storeLoading).hide()
+    if (amiibos.isNotEmpty()) {
+      findViewById<ContentLoadingProgressBar>(R.id.storeLoading).hide()
+    }
+
     updateGrid(amiibos)
-    setNoAmiibosMessageVisibility(amiibos.isEmpty())
   }
 
   private fun updateGrid(amiibos: List<Amiibo>) {
@@ -101,17 +154,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     gridAdapter.setAmiibosAndNotify(amiibos)
   }
 
-  private fun setNoAmiibosMessageVisibility(isEmpty: Boolean) {
-    findViewById<LinearLayout>(R.id.no_amiibos_message).visibility =
-      if (isEmpty) View.VISIBLE else View.INVISIBLE
-  }
 
   private fun setFilterSpinner() {
     val filter = findViewById<Spinner>(R.id.gridFilter)
     ArrayAdapter.createFromResource(
       this,
       R.array.filters,
-      android.R.layout.simple_spinner_item
+      R.layout.spinner_item
     )
       .also {
         it.setDropDownViewResource(android.R.layout.simple_selectable_list_item)
@@ -129,16 +178,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   private fun filterToAll() {
+    Logger.log("Filtering to all.")
     storeViewModel.setAllAmiibos()
     observeFilteredAmiibos()
   }
 
   private fun filterToPurchased() {
+    Logger.log("Filtering to purchased.")
     storeViewModel.setPurchasedAmiibos()
     observeFilteredAmiibos()
   }
 
   private fun filterToCustom() {
+    Logger.log("Filtering to custom.")
     storeViewModel.setCustomAmiibos()
     observeFilteredAmiibos()
   }
@@ -150,6 +202,47 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
   }
 
   override fun onNothingSelected(parent: AdapterView<*>?) {
+    filterToAll()
+  }
 
+  private fun setAddCustomButton() {
+    findViewById<FloatingActionButton>(R.id.addAmiiboFab).setOnClickListener {
+      showCustomAmiiboDialog()
+    }
+  }
+
+  private fun showCustomAmiiboDialog() {
+    customAmiiboDialog = CustomAmiiboDialog(this, R.style.CustomDialog, this)
+    customAmiiboDialog.show()
+  }
+
+  override fun pickImageOrRequestPermission() {
+    if (ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+      ) == PackageManager.PERMISSION_GRANTED
+    ) {
+      openImagePicker()
+    } else {
+      permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+  }
+
+  private fun openImagePicker() {
+    contentLauncher.launch("image/*")
+  }
+
+  override fun saveAmiiboToDatabase(amiibo: Amiibo) {
+    storeViewModel.addCustomAmiibo(amiibo)
+    showCustomAmiiboSnackbar(amiibo.name)
+  }
+
+  private fun showCustomAmiiboSnackbar(name: String?) {
+    SnackbarDisplayer.showSnackbar(
+      findViewById(R.id.storeCoordinator),
+      getString(R.string.added_message, name),
+      getColor(R.color.lightBlue),
+      getColor(R.color.white)
+    )
   }
 }

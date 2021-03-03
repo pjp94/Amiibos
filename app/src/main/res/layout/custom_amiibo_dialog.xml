@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="3"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/custom_title"
+                android:textSize="28sp"
+                android:textColor="@color/black" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/closeCustomDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_close"
+                    android:contentDescription="@string/custom_close_description" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/lightGray" />
+
+        <FrameLayout
+            android:layout_weight="1.5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/custom_amiibo_frames">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_image"
+                android:contentDescription="@string/custom_image_description" />
+
+            <ImageView
+                android:id="@+id/customAmiiboImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/custom_image_description" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/name"
+                android:labelFor="@id/customAmiiboName"
+                style="@style/CustomAmiiboLabel" />
+
+            <FrameLayout
+                style="@style/CustomAmiiboFrame">
+
+                <EditText
+                    android:id="@+id/customAmiiboName"
+                    android:importantForAutofill="no"
+                    style="@style/CustomAmiiboField" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/character"
+                android:labelFor="@id/customAmiiboCharacter"
+                style="@style/CustomAmiiboLabel" />
+
+            <FrameLayout
+                style="@style/CustomAmiiboFrame">
+
+                <EditText
+                    android:id="@+id/customAmiiboCharacter"
+                    android:importantForAutofill="no"
+                    style="@style/CustomAmiiboField" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/amiibo_series"
+                android:labelFor="@id/customAmiiboSeries"
+                style="@style/CustomAmiiboLabel" />
+
+            <FrameLayout
+                style="@style/CustomAmiiboFrame">
+
+                <EditText
+                    android:id="@+id/customAmiiboSeries"
+                    android:importantForAutofill="no"
+                    style="@style/CustomAmiiboField" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/game_series"
+                android:labelFor="@id/customAmiiboGameSeries"
+                style="@style/CustomAmiiboLabel" />
+
+            <FrameLayout
+                style="@style/CustomAmiiboFrame">
+
+                <EditText
+                    android:id="@+id/customAmiiboGameSeries"
+                    android:importantForAutofill="no"
+                    style="@style/CustomAmiiboField" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/type"
+                android:labelFor="@id/customAmiiboType"
+                style="@style/CustomAmiiboLabel" />
+
+            <FrameLayout
+                style="@style/CustomAmiiboFrame">
+
+                <EditText
+                    android:id="@+id/customAmiiboType"
+                    android:importantForAutofill="no"
+                    style="@style/CustomAmiiboField" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonAddCustom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/lightBlue"
+        android:text="@string/add" />
+
+</RelativeLayout>

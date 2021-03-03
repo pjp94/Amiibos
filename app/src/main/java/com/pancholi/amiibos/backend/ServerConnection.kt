@@ -17,7 +17,10 @@ class ServerConnection(private val url: URL) {
         connectTimeout = 10000
         readTimeout = 10000
 
-        return InputStreamReader(inputStream).buffered().use(BufferedReader::readText)
+        val response = InputStreamReader(inputStream).buffered().use(BufferedReader::readText)
+        inputStream.close()
+
+        return response
       }
     } catch (exception: IOException) {
       Logger.log("Exception making network request: ${exception.message}")

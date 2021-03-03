@@ -20,8 +20,6 @@
 
             <include layout="@layout/add_amiibo_fab" />
 
-            <include layout="@layout/no_amiibos_message" />
-
             <include layout="@layout/store_loading" />
 
         </RelativeLayout>

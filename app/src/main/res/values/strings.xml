@@ -32,19 +32,31 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
 
-    <!-- Remove Amiibo dialog -->
+    <!-- Remove Amiibo -->
     <string name="remove_amiibo">Remove %s</string>
     <string name="remove_amiibo_message">Are you sure you want to remove %s from your store?</string>
     <string name="cancel">Cancel</string>
+    <string name="remove_amiibo_snackbar">Removed %s from your store.</string>
 
     <!-- Filters -->
     <string name="filter">Filter:</string>
     <string name="all">All</string>
     <string name="custom">Custom</string>
 
+    <!-- Custom Amiibo -->
+    <string name="custom_title">Add your own Amiibo!</string>
+    <string name="name">Name:</string>
+    <string name="character">Character:</string>
+    <string name="amiibo_series">Amiibo Series:</string>
+    <string name="game_series">Game Series:</string>
+    <string name="type">Type:</string>
+    <string name="add">Add</string>
+    <string name="added_message">Added %s to your store!</string>
+
     <!-- Content descriptors -->
     <string name="add_amiibo_fab_description">Adds a custom Amiibo with a user selected image.</string>
     <string name="amiibo_detail_image_description">Full scale Amiibo image.</string>
-    <string name="sad_face_image_description">Sad face.</string>
+    <string name="custom_image_description">Image for custom Amiibo.</string>
+    <string name="custom_close_description">Close button for custom Amiibo window.</string>
 
 </resources>

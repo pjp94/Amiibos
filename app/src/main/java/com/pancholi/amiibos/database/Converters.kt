@@ -15,7 +15,11 @@ class Converters {
   }
 
   @TypeConverter
-  fun fromMapToString(map: Map<String, String?>): String {
+  fun fromMapToString(map: Map<String, String?>?): String {
+    if (map == null) {
+      return ""
+    }
+
     val builder = StringBuilder()
 
     for ((key, value) in map) {

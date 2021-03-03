@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Amiibo::class], version = 1)
+@Database(entities = [Amiibo::class], version = 3)
 @TypeConverters(Converters::class)
 abstract class AmiiboDatabase : RoomDatabase() {
 
@@ -29,7 +29,7 @@ abstract class AmiiboDatabase : RoomDatabase() {
 
     private fun createDatabase(context: Context): AmiiboDatabase {
       return Room.databaseBuilder(context, AmiiboDatabase::class.java, NAME)
-        .fallbackToDestructiveMigrationOnDowngrade()
+        .fallbackToDestructiveMigration()
         .build()
     }
   }

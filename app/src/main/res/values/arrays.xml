@@ -5,4 +5,7 @@
         <item>@string/purchased</item>
         <item>@string/custom</item>
     </string-array>
+    <string-array name="custom_types">
+
+    </string-array>
 </resources>
